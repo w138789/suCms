@@ -137,9 +137,146 @@ function check_func()
     return $items;
 }
 
+/**
+ * 创建数据表
+ * @param $db 数据库连接资源
+ * @param string $prefix
+ */
 function create_tables($db, $prefix = '')
 {
     //读取SQL文件
     $sql = file_get_contents(ROOT_PATH . 'data/sql.sql');
     $sql = str_replace("\r", "\n", $sql);
+    $sql = explode(";\n", $sql);
+
+    //替换表前缀
+    $orginal = 'sent_';
+    $sql     = str_replace(" `{$orginal}", " `{$prefix}", $sql);
+
+    //开始安装
+    show_msg('开始安装数据库...');
+    foreach ($sql as $value)
+    {
+        $value = trim($value);
+        if (empty($value)) continue;
+        if (substr($value, 0, 12) == 'CREATE TABLE')
+        {
+            $name = preg_replace("/^CREATE TABLE `(\w+)` .*/s", "\\1", $value);
+            $msg  = "创建数据表{$name}";
+            if ($db->execute($value) == false)
+            {
+                show_msg($msg . '...成功');
+            } else
+            {
+                show_msg($msg . '..失败', 'error');
+                //session('error', true);
+            }
+        } else
+        {
+            $db->execute($value);
+        }
+    }
+}
+
+/**
+ * 更新数据表
+ * @param  resource $db 数据库连接资源
+ * @author lyq <605415184@qq.com>
+ */
+function update_tables($db, $prefix = ''){
+    //读取SQL文件
+    $sql = file_get_contents(ROOT_PATH . 'data/update.sql');
+    $sql = str_replace("\r", "\n", $sql);
+    $sql = explode(";\n", $sql);
+
+    //替换表前缀
+    $sql = str_replace(" `sent_", " `{$prefix}", $sql);
+
+    //开始安装
+    show_msg('开始升级数据库...');
+    foreach ($sql as $value) {
+        $value = trim($value);
+        if(empty($value)) continue;
+        if(substr($value, 0, 12) == 'CREATE TABLE') {
+            $name = preg_replace("/^CREATE TABLE `(\w+)` .*/s", "\\1", $value);
+            $msg  = "创建数据表{$name}";
+            if(false !== $db->execute($value)){
+                show_msg($msg . '...成功');
+            } else {
+                show_msg($msg . '...失败！', 'error');
+                session('error', true);
+            }
+        } else {
+            if(substr($value, 0, 8) == 'UPDATE `') {
+                $name = preg_replace("/^UPDATE `(\w+)` .*/s", "\\1", $value);
+                $msg  = "更新数据表{$name}";
+            } else if(substr($value, 0, 11) == 'ALTER TABLE'){
+                $name = preg_replace("/^ALTER TABLE `(\w+)` .*/s", "\\1", $value);
+                $msg  = "修改数据表{$name}";
+            } else if(substr($value, 0, 11) == 'INSERT INTO'){
+                $name = preg_replace("/^INSERT INTO `(\w+)` .*/s", "\\1", $value);
+                $msg  = "写入数据表{$name}";
+            }
+            if(($db->execute($value)) !== false){
+                show_msg($msg . '...成功');
+            } else{
+                show_msg($msg . '...失败！', 'error');
+                session('error', true);
+            }
+        }
+    }
+}
+
+function register_administrator($db, $prefix, $admin)
+{
+    show_msg('开始注册创始人账号...');
+    $salt     = rand_string();
+    $password = md5($admin['password'] . $salt);
+    $sql      = "INSERT INTO `[PREFIX]member` (`uid`, `username`, `password`, `nickname`, `email`, `sex`, `birthday`, `qq`, `score`, `salt`, `login`, `reg_ip`, `reg_time`, `last_login_ip`, `last_login_time`, `status`) VALUE " .
+        "('1', '[NAME]', '[PASS]', '[NAME]', '[EMALL]', '0', '0000-00-00', '', '0', '[SALT]', '1', '0', '[TIME]', '[IP]', '[TIME]', '1');";
+    $sql      = str_replace(['[PREFIX]', '[NAME]', '[PASS]', '[EMALL]', '[SALT]', '[TIME]', '[IP]'], [$prefix, $admin['username'], $password, $admin['email'], $salt, time(), get_client_ip(1)], $sql);
+    $db->execute($sql);
+    show_msg('创始人账号注册完成! ');
+}
+
+/**
+ * 写入配置信息
+ * @param $config 配置信息
+ * @return string
+ */
+function write_config($config)
+{
+    if (is_array($config))
+    {
+        //读取配置内容
+        $conf = file_get_contents(ROOT_PATH . 'data/db.tpl');
+        //替换配置项
+        foreach ($config as $name => $value)
+        {
+            $conf = str_replace("[{$name}]", $value, $conf);
+        }
+        file_put_contents(APP_PATH . 'install.lock', 'ok');
+        //写入应用配置文件
+        if (file_put_contents(APP_PATH . 'database.php', $conf))
+        {
+            show_msg('配置文件写入成功');
+        } else
+        {
+            show_msg('配置文件写入失败! ', 'error');
+            session('error', true);
+        }
+        return '';
+    }
+}
+
+/**
+ * 及时显示提示信息
+ * @param $msg 提示信息
+ * @param string $class
+ */
+function show_msg($msg, $class = 'primary')
+{
+    echo "<script type = 'text/javascript'>showmsg(\"{$msg}\", \"{$class}\")</script>";
+    flush();
+    ob_flush();
 }

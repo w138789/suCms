@@ -85,7 +85,7 @@ class Index extends Controller
                 $DB = [];
                 list($DB['type'], $DB['hostname'], $DB['database'], $DB['username'], $DB['password'], $DB['hostport'], $DB['prefix']) = $db;
                 //缓存数据库配置
-                session('admin_config', $DB);
+                session('db_config', $DB);
 
                 //创建数据库
                 $dbname = $DB['database'];
@@ -115,31 +115,44 @@ class Index extends Controller
 
     public function sql()
     {
-        session('error',false);
-        $this->status['index'] = 'success';
-        $this->status['check'] = 'success';
+        session('error', false);
+        $this->status['index']  = 'success';
+        $this->status['check']  = 'success';
         $this->status['config'] = 'success';
-        $this->status['sql'] = 'primary';
+        $this->status['sql']    = 'primary';
         $this->assign('status', $this->status);
         echo $this->fetch();
-        if(session('update')){
-            return '升级数据库未做';
-        }else{
-            //连接数据库
-            $dbconfig = session('db_config');
-            $db = Db::connect($dbconfig);
-            //创建数据表
-            create_tables($db,$dbconfig['prefix']);
+
+        //连接数据库
+        $dbconfig = session('db_config');
+        $db       = Db::connect($dbconfig);
+        //创建数据表
+        create_tables($db, $dbconfig['prefix']);
+        //注册创始人帐号
+        $admin = session('admin_info');
+        register_administrator($db, $dbconfig['prefix'], $admin);
+
+        //创建配置文件
+        $conf = write_config($dbconfig);
+        session('config_file', $conf);
+
+        if (session('error'))
+        {
+            show_msg('失败');
+        } else
+        {
+            echo '<script type="text/javascript">location.href = "' . url('install/index/complete') . '";</script>';
         }
+
 
     }
 
-    public function complate()
+    public function complete()
     {
-        $this->status['index'] = 'success';
-        $this->status['check'] = 'success';
-        $this->status['config'] = 'success';
-        $this->status['sql'] = 'success';
+        $this->status['index']    = 'success';
+        $this->status['check']    = 'success';
+        $this->status['config']   = 'success';
+        $this->status['sql']      = 'success';
         $this->status['complete'] = 'success';
         $this->assign('status', $this->status);
         return $this->fetch();
