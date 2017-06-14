@@ -13,20 +13,22 @@
 
 
 /**
-+----------------------------------------------------------
+ * +----------------------------------------------------------
  * 产生随机字串，可用来自动生成密码 默认长度6位 字母和数字混合
-+----------------------------------------------------------
+ * +----------------------------------------------------------
  * @param string $len 长度
  * @param string $type 字串类型
  * 0 字母 1 数字 其它 混合
  * @param string $addChars 额外字符
-+----------------------------------------------------------
+ * +----------------------------------------------------------
  * @return string
 +----------------------------------------------------------
  */
-function rand_string($len = 6, $type = '', $addChars = '') {
+function rand_string($len = 6, $type = '', $addChars = '')
+{
     $str = '';
-    switch ($type) {
+    switch ($type)
+    {
         case 0:
             $chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz' . $addChars;
             break;
@@ -47,16 +49,20 @@ function rand_string($len = 6, $type = '', $addChars = '') {
             $chars = 'ABCDEFGHIJKMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789' . $addChars;
             break;
     }
-    if ($len > 10) {
+    if ($len > 10)
+    {
         //位数过长重复字符串一定次数
         $chars = $type == 1 ? str_repeat($chars, $len) : str_repeat($chars, 5);
     }
-    if ($type != 4) {
+    if ($type != 4)
+    {
         $chars = str_shuffle($chars);
         $str   = substr($chars, 0, $len);
-    } else {
+    } else
+    {
         // 中文随机字
-        for ($i = 0; $i < $len; $i++) {
+        for ($i = 0; $i < $len; $i++)
+        {
             $str .= msubstr($chars, floor(mt_rand(0, mb_strlen($chars, 'utf-8') - 1)), 1);
         }
     }
@@ -69,32 +75,62 @@ function rand_string($len = 6, $type = '', $addChars = '') {
  * @param boolean $adv 是否进行高级模式获取（有可能被伪装）
  * @return mixed
  */
-function get_client_ip($type = 0, $adv = false) {
-    $type      = $type ? 1 : 0;
+function get_client_ip($type = 0, $adv = false)
+{
+    $type = $type ? 1 : 0;
     static $ip = NULL;
-    if ($ip !== NULL) {
+    if ($ip !== NULL)
+    {
         return $ip[$type];
     }
 
-    if ($adv) {
-        if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+    if ($adv)
+    {
+        if (isset($_SERVER['HTTP_X_FORWARDED_FOR']))
+        {
             $arr = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
             $pos = array_search('unknown', $arr);
-            if (false !== $pos) {
+            if (false !== $pos)
+            {
                 unset($arr[$pos]);
             }
 
             $ip = trim($arr[0]);
-        } elseif (isset($_SERVER['HTTP_CLIENT_IP'])) {
+        } elseif (isset($_SERVER['HTTP_CLIENT_IP']))
+        {
             $ip = $_SERVER['HTTP_CLIENT_IP'];
-        } elseif (isset($_SERVER['REMOTE_ADDR'])) {
+        } elseif (isset($_SERVER['REMOTE_ADDR']))
+        {
             $ip = $_SERVER['REMOTE_ADDR'];
         }
-    } elseif (isset($_SERVER['REMOTE_ADDR'])) {
+    } elseif (isset($_SERVER['REMOTE_ADDR']))
+    {
         $ip = $_SERVER['REMOTE_ADDR'];
     }
     // IP地址合法验证
     $long = sprintf("%u", ip2long($ip));
     $ip   = $long ? array($ip, $long) : array('0.0.0.0', 0);
     return $ip[$type];
+}
+
+/**
+ * 检测用户是否登录
+ * @return integer 0-未登录，大于0-当前登录用户ID
+ * @author 麦当苗儿 <zuojiazi@vip.qq.com>
+ */
+function is_login()
+{
+    $user = session('user_auth');
+    if (empty($user))
+    {
+        return 0;
+    } else
+    {
+        return session('user_auth_sign') == data_auth_sign($user) ? $user['uid'] : 0;
+    }
+}
+
+function return_msg($status = 0, $msg = '')
+{
+    return ['status' => $status, 'msg' => $msg];
 }
