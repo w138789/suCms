@@ -28,3 +28,4 @@ class Base extends Controller
         $this->url = strtolower($this->request->module() . '/' . $this->request->controller() . '/' . $this->request->action());
     }
 }
+

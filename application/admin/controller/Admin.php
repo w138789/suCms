@@ -24,3 +24,4 @@ class Admin extends Base
         }
     }
 }
+
