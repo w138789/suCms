@@ -17,7 +17,6 @@ class Admin extends Base
     public function _initialize()
     {
         parent::_initialize();
-
         if (!is_login() && !in_array($this->url, ['admin/index/login', 'admin/index/logout', 'admin/index/verify']))
         {
             $this->redirect('admin/index/login');

@@ -2,6 +2,7 @@
 namespace app\admin\controller;
 
 use app\admin\model;
+
 class Index extends Admin
 {
     protected $adminModel;
@@ -35,14 +36,24 @@ class Index extends Admin
                 return $this->error($verifyRuturn);
             }
             $result = $this->adminModel->login($username, $password);
-            if($result){
+            if ($result)
+            {
                 return $this->success('成功');
+            } else
+            {
+                return $this->error('失败');
             }
 
         } else
         {
             return $this->fetch();
         }
+    }
+
+    public function logout()
+    {
+        session('admin_auth', null);
+        session('admin_auth_sign', null);
     }
 }
 

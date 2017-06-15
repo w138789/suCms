@@ -15,8 +15,11 @@ class Admin extends Model
         {
             if (md5($password . $admin['salt']) == $admin['password'])
             {
-
+                $this->autoLogin($admin);
                 return true;
+            } else
+            {
+                return false;
             }
         }
     }
@@ -31,9 +34,13 @@ class Admin extends Model
 
         //更新登录信息
         $data = [
-            'admin_id' => $admin['admin_id'],
-            'username' => $admin['username'],
-            'username' => $admin['username'],
+            'admin_id'        => $admin['admin_id'],
+            'username'        => $admin['username'],
+            'last_login_ip'   => get_client_ip(1),
+            'last_login_time' => time_format(),
         ];
+        $this->save($data, ['admin' => $admin['admin_id']]);
+        session('admin_auth', $data);
+        session('admin_auth_sign', data_auth_sign($data));
     }
 }
