@@ -1,7 +1,7 @@
 <?php
 namespace app\admin\controller;
 
-use app\admin\model;
+use app\common\model;
 
 class Index extends Admin
 {

@@ -27,13 +27,26 @@ class Config extends Admin
 
     public function group($id = 1)
     {
-        $type  = config('config_group_list');
-        $where = ['status' => 1, 'group' => $id];
-        $order = 'sort';
-        $list  = $this->model->selectAll('', $where, $order);
-        $this->assign('list', $list);
-        $this->assign('id', $id);
-        $this->setMeta($type[$id] . '设置');
-        return $this->fetch();
+        if (IS_POST)
+        {
+            $config = input('config/a');
+            foreach ($config as $k => $v)
+            {
+                $this->model->where(['name' => $k])->setField('value', $v);
+            }
+            cache('db_config_data',NULL);
+            return $this->success('更新成功!');
+        } else
+        {
+            $type  = config('config_group_list');
+            $where = ['status' => 1, 'group' => $id];
+            $order = 'sort';
+            $list  = $this->model->selectAll('', $where, $order);
+            $this->assign('list', $list);
+            $this->assign('id', $id);
+            $this->setMeta($type[$id] . '设置');
+            return $this->fetch();
+        }
+
     }
 }
