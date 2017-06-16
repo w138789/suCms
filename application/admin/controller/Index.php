@@ -2,6 +2,7 @@
 namespace app\admin\controller;
 
 use app\admin\model;
+
 class Index extends Admin
 {
     protected $adminModel;
@@ -14,7 +15,8 @@ class Index extends Admin
 
     public function index()
     {
-        return '后台首页';
+        $this->setMeta('后台首页');
+        return $this->fetch();
     }
 
     public function login($username = '', $password = '', $verify = '')
@@ -35,14 +37,66 @@ class Index extends Admin
                 return $this->error($verifyRuturn);
             }
             $result = $this->adminModel->login($username, $password);
-            if($result){
-                return $this->success('成功');
+            if ($result == 1)
+            {
+                return $this->success('登录成功', 'admin/index/index');
+            } else
+            {
+                switch ($result)
+                {
+                    case -1:
+                        $error = '密码错误';
+                        break;
+                    case -2:
+                        $error = '账号错误';
+                        break;
+                }
+                return $this->error($error);
             }
 
         } else
         {
             return $this->fetch();
         }
+    }
+
+    public function clear()
+    {
+        if (IS_POST)
+        {
+            $clear = input('post.clear/a', []);
+            foreach ($clear as $k => $v)
+            {
+                if ($v == 'cache')
+                {
+                    \think\Cache::clear(); // 清空缓存数据
+                } elseif ($v == 'log')
+                {
+                    \think\Log::clear();
+                }
+            }
+            return $this->success('更新成功', 'admin/index/index');
+        } else
+        {
+            $keylist = [
+                ['name'   => 'clear', 'title' => '更新缓存', 'type' => 'checkbox', 'help' => '',
+                 'option' => ['cache' => '缓存数据', 'log' => '日志数据']
+                ]
+            ];
+            $data    = ['keyList' => $keylist];
+
+            $this->assign($data);
+            $this->setMeta('更新缓存');
+            return $this->fetch('public/edit');
+        }
+
+    }
+
+    public function logout()
+    {
+        session('admin_auth', null);
+        session('admin_auth_sign', null);
+        $this->redirect('admin/index/login');
     }
 }
 

@@ -3,8 +3,9 @@
 namespace app\common\controller;
 
 use think\Controller;
+use app\common\model;
 
-class Base extends Controller
+class Base extends \think\Controller
 {
     protected $url = '';
 
@@ -14,6 +15,13 @@ class Base extends Controller
         {
             return $this->redirect('install/index/index');
         }
+        /* 读取数据库中的配置 */
+        $config = cache('db_config_data');
+        if (!$config) {
+            $config = model('Config')->lists();
+            cache('db_config_data', $config);
+        }
+        config($config);
         //获取request信息
         $this->requestInfo();
     }

@@ -34,6 +34,7 @@ class Admin extends Migrator
             ->addColumn('salt', 'string', ['limit' => 10])
             ->addColumn('email', 'string', ['limit' => 60])
             ->addColumn('last_login_ip', 'string', ['limit' => 15])
+            ->addColumn('last_login_time', 'string', ['limit' => 60])
             ->addColumn('create_time', 'timestamp', ['default' => 'CURRENT_TIMESTAMP'])
             ->addColumn('update_time', 'timestamp', ['default' => 'CURRENT_TIMESTAMP', 'update' => 'CURRENT_TIMESTAMP'])
             ->create();
@@ -43,6 +44,7 @@ class Admin extends Migrator
             'salt'          => 'S7E3sd',
             'email'         => '294496623@qq.com',
             'last_login_ip' => '192.168.3.201',
+            'last_login_time' => '0',
         ];
         $this->table('admin')->insert($data)->saveData();
     }

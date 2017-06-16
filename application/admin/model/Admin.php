@@ -10,13 +10,19 @@ class Admin extends Model
         $admin = $this->get(['username' => $username]);
         if (empty($admin))
         {
-            return false;
+            //账号为空
+            return -2;
         } else
         {
             if (md5($password . $admin['salt']) == $admin['password'])
             {
-
-                return true;
+                $this->autoLogin($admin);
+                //密码正确
+                return 1;
+            } else
+            {
+                //密码错误
+                return -1;
             }
         }
     }
@@ -31,9 +37,13 @@ class Admin extends Model
 
         //更新登录信息
         $data = [
-            'admin_id' => $admin['admin_id'],
-            'username' => $admin['username'],
-            'username' => $admin['username'],
+            'admin_id'        => $admin['admin_id'],
+            'username'        => $admin['username'],
+            'last_login_ip'   => get_client_ip(1),
+            'last_login_time' => time_format(),
         ];
+        $this->save($data, ['admin' => $admin['admin_id']]);
+        session('admin_auth', $data);
+        session('admin_auth_sign', data_auth_sign($data));
     }
 }

@@ -75,7 +75,7 @@ function rand_string($len = 6, $type = '', $addChars = '')
  * @param boolean $adv 是否进行高级模式获取（有可能被伪装）
  * @return mixed
  */
-function get_client_ip($type = 0, $adv = false)
+function get_client_ip($type = 0, $adv = FALSE)
 {
     $type = $type ? 1 : 0;
     static $ip = NULL;
@@ -120,17 +120,87 @@ function get_client_ip($type = 0, $adv = false)
  */
 function is_login()
 {
-    $user = session('user_auth');
-    if (empty($user))
+    $admin = session('admin_auth');
+    if (empty($admin))
     {
-        return 0;
+        return false;
     } else
     {
-        return session('user_auth_sign') == data_auth_sign($user) ? $user['uid'] : 0;
+        return session('admin_auth_sign') == data_auth_sign($admin) ? $admin['admin_id'] : 0;
     }
 }
 
+/**
+ * 数据签名认证
+ * @param  array $data 被认证的数据
+ * @return string       签名
+ * @author 麦当苗儿 <zuojiazi@vip.qq.com>
+ */
+function data_auth_sign($data)
+{
+    //数据类型检测
+    if (!is_array($data))
+    {
+        $data = (array)$data;
+    }
+    ksort($data); //排序
+    $code = http_build_query($data); //url编码并生成query字符串
+    $sign = sha1($code); //生成签名
+    return $sign;
+}
+
+/**
+ * 返回信息
+ * @param int $status 返回状态
+ * @param string $msg 返回信息
+ * @return array
+ */
 function return_msg($status = 0, $msg = '')
 {
     return ['status' => $status, 'msg' => $msg];
+}
+
+/**
+ * 时间戳格式化
+ * @param int $time
+ * @return string 完整的时间显示
+ * @author huajie <banhuajie@163.com>
+ */
+function time_format($time = NULL, $format = 'Y-m-d H:i')
+{
+    $time = $time === NULL ? time() : intval($time);
+    return date($format, $time);
+}
+
+function is_administrator($admin_id = NULL)
+{
+    $admin_id = is_null($admin_id) ? is_login() : $admin_id;
+    return $admin_id && (intval($admin_id) === config('admin_administrator'));
+}
+
+/**
+ * 先取config里的值,或者取数据库config的value
+ * @param null $key 获取配置的key或name
+ * @return bool|mixed
+ */
+function get_config($key = NULL)
+{
+    if (empty($key)) return false;
+    $configs = db('Config')->where(['name' => $key])->find();
+    return !empty($configs['value']) ? $configs['value'] : config($key);
+}
+
+// 分析枚举类型配置值 格式 a:名称1,b:名称2
+function parse_config_attr($string) {
+    $array = preg_split('/[,;\r\n]+/', trim($string, ",;\r\n"));
+    if (strpos($string, ':')) {
+        $value = array();
+        foreach ($array as $val) {
+            list($k, $v) = explode(':', $val);
+            $value[$k]   = $v;
+        }
+    } else {
+        $value = $array;
+    }
+    return $value;
 }
