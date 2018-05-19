@@ -37,47 +37,47 @@
 				<div class="tab-content">
 					{volist name="fieldGroup" id="vGroup"}
 					<div class="tab-pane fade {if condition="$i eq 1"}in active{/if}" id="tab{$key}">
-					{volist name="vGroup" id="field"}
-					{if $field['type'] eq 'hidden'}
-					<input type="hidden" name="{$field['name']}" value="{$info[$field['name']]|default=''}"/>
-					{else/}
-					<div class="form-group">
-						<label class="col-lg-2 control-label">{$field['title']|htmlspecialchars}</label>
-						<div class="col-lg-10 col-sm-10">
-							{:widget('common/Form/show',array($field,$info))}
-							<div class="help-block">{$field['help']|default=''}</div>
+						{volist name="vGroup" id="field"}
+						{if $field['type'] eq 'hidden'}
+						<input type="hidden" name="{$field['name']}" value="{$info[$field['name']]|default=''}"/>
+						{else/}
+						<div class="form-group">
+							<label class="col-lg-2 control-label">{$field['title']|htmlspecialchars}</label>
+							<div class="col-lg-10 col-sm-10">
+								{:widget('common/Form/show',array($field,$info))}
+								<div class="help-block">{$field['help']|default=''}</div>
+							</div>
 						</div>
+						{/if}
+						{/volist}
 					</div>
-					{/if}
 					{/volist}
 				</div>
-				{/volist}
 			</div>
+			{elseif isset($keyList) /}
+			{volist name="keyList" id="field"}
+			{if $field['type'] eq 'hidden'}
+			<input type="hidden" name="{$field['name']}" value="{$info[$field['name']]|default=''}"/>
+			{else/}
+			<div class="form-group">
+				<label class="col-lg-2 control-label">{$field['title']|htmlspecialchars}</label>
+				<div class="col-lg-10 col-sm-10">
+					{:widget('common/Form/show',array($field,$info))}
+					<div class="help-block">{$field['help']|default=''}</div>
+				</div>
+			</div>
+			{/if}
+			{/volist}
+			{/if}
+			<div class="form-group">
+				<div class="col-lg-offset-2 col-lg-10">
+					<input type="hidden" name="id" value="{$info['id']|default=''}">            
+					<button class="btn btn-success submit-btn ajax-post" type="submit" target-form="form-horizontal">确 定</button>
+					<button class="btn btn-danger btn-return" onclick="javascript:history.back(-1);return false;">返 回</button>
+				</div>
+			</div>
+		</form>
 	</div>
-	{else/}
-	{volist name="keyList" id="field"}
-	{if $field['type'] eq 'hidden'}
-	<input type="hidden" name="{$field['name']}" value="{$info[$field['name']]|default=''}"/>
-	{else/}
-	<div class="form-group">
-		<label class="col-lg-2 control-label">{$field['title']|htmlspecialchars}</label>
-		<div class="col-lg-10 col-sm-10">
-			{:widget('common/Form/show',array($field,$info))}
-			<div class="help-block">{$field['help']|default=''}</div>
-		</div>
-	</div>
-	{/if}
-	{/volist}
-	{/if}
-	<div class="form-group">
-		<div class="col-lg-offset-2 col-lg-10">
-			<input type="hidden" name="id" value="{$info['id']|default=''}">
-			<button class="btn btn-success submit-btn ajax-post" type="submit" target-form="form-horizontal">确 定</button>
-			<button class="btn btn-danger btn-return" onclick="javascript:history.back(-1);return false;">返 回</button>
-		</div>
-	</div>
-	</form>
-</div>
 </div>
 {/block}
 {block name="script"}

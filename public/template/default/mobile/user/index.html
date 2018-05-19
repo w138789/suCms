@@ -1,0 +1,41 @@
+{extend name="public/base"/}
+{block name="body"}
+<div style="margin-top: 40px">
+    <div class="col-xs-12" style="height: 150px; background: #2ecc71;">
+        <div style="float: left; margin:30px 0 0 20px; width: 20%;">
+            <img src="{$user.head_images}" alt="" style="-webkit-border-radius: 50%;">
+        </div>
+        <div style="float: left; margin:30px 0 0 30px; color: #666;">
+            <p>{:empty($user.nickname)?$user.mobile:$user.nickname}</p>
+
+            <p>关注时间: {$user.create_time}</p>
+        </div>
+    </div>
+    <div class="col-xs-12" style="margin-top: 10px;background: #fff; border:1px solid #ccc">
+        <div class="col-xs-6" style="float: left; text-align: center; color: #666;">
+            <h5>佣金</h5>
+
+            <h5></h5>
+        </div>
+        <div class="col-xs-6" style="float: left; text-align: center;border-left: 1px solid #ccc; color: #666;">
+            <h5>积分</h5>
+
+            <h5></h5>
+        </div>
+    </div>
+    <div class="col-xs-12" style="margin-top: 10px; background: #fff;">
+        <ul style="margin-bottom: 0">
+            <a href="">
+                <li style="padding-left:20px; line-height: 45px; border-bottom: solid 1px #ccc; color: #666;">
+                    <span class="glyphicon glyphicon-sort-by-order" style="margin-right: 10px"></span>全部订单
+                </li>
+            </a>
+            <a href="{:url('login/logout')}">
+                <li style="padding-left:20px; line-height: 45px; color: #666;">
+                    <span class="glyphicon glyphicon-user" style="margin-right: 10px"></span>退出登录
+                </li>
+            </a>
+        </ul>
+    </div>
+</div>
+{/block}

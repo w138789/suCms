@@ -1,0 +1,158 @@
+{extend name="public/base"/}
+{block name="style"}
+<link rel="stylesheet" href="__PUBLIC__/plugs/tagsinput/bootstrap-tagsinput.css">
+<script src="__PUBLIC__/plugs/tagsinput/bootstrap-tagsinput.js"></script>
+
+<link rel="stylesheet" type="text/css" href="__PUBLIC__/plugs/webuploader/webuploader.css">
+<!-- 配置文件 -->
+<script type="text/javascript" src="__PUBLIC__/plugs/ueditor/ueditor.config.js"></script>
+<!-- 编辑器源码文件 -->
+<script type="text/javascript" src="__PUBLIC__/plugs/ueditor/ueditor.all.min.js"></script>
+<!-- datepicker statr -->
+<link href="__PUBLIC__/plugs/datepicker/css/foundation-datepicker.min.css" rel="stylesheet" type="text/css">
+<script src="__PUBLIC__/plugs/datepicker/js/foundation-datepicker.js"></script>
+<script src="__PUBLIC__/plugs/datepicker/js/foundation-datepicker.zh-CN.js"></script>
+<link rel="stylesheet" type="text/css" href="__PUBLIC__/plugs/board/board.min.css">
+<!-- datepicker end -->
+{/block}
+{block name="body"}
+<div class="main-box clearfix">
+    <header class="main-box-header clearfix">
+        <div class="pull-left">
+            <h2>{:isset($info['id'])?'编辑':'新增'}商品</h2>
+        </div>
+        <div class="pull-right"></div>
+    </header>
+    <div class="main-box-body clearfix">
+        <form method="post" class="form form-horizontal">
+            <div class="form-group">
+                <label class="col-lg-2 control-label">标题</label>
+
+                <div class="col-lg-10">
+                    <input type="text" class="form-control" name="goods_name" value="{$info.goods_name|default=''}"
+                           style="width: 80%">
+                    <span class="help-block">（商品名称）</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-lg-2 control-label">商品分类</label>
+
+                <div class="col-lg-10">
+                    <select class="form-control" name="category_id" id="category_id" style="width:auto;">
+                        {volist name="categorys" id="item"}
+                        <option value="{$key}" {if condition="$key eq $categorys" }selected{
+                        /if}>{$item}</option>
+                        {/volist}
+                    </select>
+                    <span class="help-block">（商品分类）</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-lg-2 control-label">品牌分类</label>
+
+                <div class="col-lg-10">
+                    <input type="text" class="form-control" name="brand_id" value="{$info.brand_id|default=0}"
+                           style="width: 60%">
+                    <span class="help-block">（品牌分类）</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-lg-2 control-label">商品货号</label>
+
+                <div class="col-lg-10">
+                    <input type="text" class="form-control" name="goods_sn" value="{$info['goods_sn']|default=''}"
+                           style="width: 80%">
+                    <span class="help-block">（商品货号）</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-lg-2 control-label">商品数量</label>
+                <div class="col-lg-10">
+                    <input type="text" class="form-control" name="goods_number" value="{$info['goods_number']|default=''}"
+                           style="width: 50%">
+                    <span class="help-block">（商品数量）</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-lg-2 control-label">市场售价</label>
+
+                <div class="col-lg-10">
+                    <input type="text" style="width: auto;" class="form-control" name="market_price" id="market_price" autocomplete="false" value="{$info.market_price}">
+                    <span class="help-block">（市场售价）</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-lg-2 control-label">本店售价</label>
+
+                <div class="col-lg-10">
+                    <input type="text" style="width: auto;" class="form-control" name="shop_price" id="shop_price" autocomplete="false" value="{$info.shop_price}">
+                    <span class="help-block">（本店售价）</span>
+
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-lg-2 control-label">关键词</label>
+
+                <div class="col-lg-10">
+                    <input type="text" class="form-control" name="keywords" value="{$info['keywords']|default=''}"
+                           style="width: 50%">
+                    <span class="help-block">（关键词）</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-lg-2 control-label">商品详情</label>
+
+                <div class="col-lg-10">
+                    <textarea name="goods_desc" id="goods_desc" style="width: 100%;">{$info.goods_desc}</textarea>
+                    <!-- 实例化编辑器代码 -->
+                    <script type="text/javascript">
+                        var ue = UE.getEditor('goods_desc', {
+                            serverUrl : "{:url(MODULE_NAME.'/upload/ueditor')}"
+                        });
+                    </script>
+                    <span class="help-block">（商品详情）</span>
+                </div>
+            </div>
+
+
+            <div class="form-group">
+                <label class="col-lg-2 control-label">商品图片</label>
+
+                <div class="col-lg-10">
+                    {:widget('common/Form/show',array(array('name'=>'icon','type'=>'image'),$info))}
+                    <span class="help-block">（商品图片）</span>
+                </div>
+            </div>
+
+
+            <div class="form-group">
+                <label class="col-lg-2 control-label">商品多图</label>
+
+                <div class="col-lg-10">
+                    {:widget('common/Form/show',array(array('name'=>'icon','type'=>'image'),$info))}
+                    <span class="help-block">（商品多图）</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-lg-offset-2 col-lg-10">
+                    <input type="hidden" name="id" value="{$info['goods_id']|default=''}">
+                    <button class="btn btn-success submit-btn ajax-post" type="submit" target-form="form-horizontal">
+                        确定
+                    </button>
+                    <button class="btn btn-danger btn-return" onclick="javascript:history.back(-1);return false;">返 回
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{/block}
+{block name="script"}
+<script type="text/javascript" src="__PUBLIC__/plugs/webuploader/webuploader.min.js"></script>
+<script type="text/javascript" src="__PUBLIC__/plugs/webuploader/webuploader.custom.js"></script>
+<script type="text/javascript" src="__PUBLIC__/js/droppable.js"></script>
+<script type="text/javascript" src="__PUBLIC__/plugs/board/board.min.js"></script>
+{/block}

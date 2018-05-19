@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="__PUBLIC__/css/mobile/swiper-3.3.1.min.css">
+    <link rel="stylesheet" href="__PUBLIC__/css/mobile/bootstrap.min.css">
+    <link rel="stylesheet" href="__PUBLIC__/css/mobile/weui.min.css">
+    <link rel="stylesheet" href="__PUBLIC__/css/mobile/jd.css">
+    <script src="__PUBLIC__/js/mobile/jd.js"></script>
+    <script src="__PUBLIC__/js/mobile/jquery-1.11.3.js"></script>
+    <title>{$title}</title>
+</head>
+<body>
+<div class="hdS col-xs-12">
+    <div class="back" id="back"></div>
+    <div class="logo col-xs-2"></div>
+    <div class="sh col-xs-10">
+        <input type="text" class="inp">
+    </div>
+</div>
+
+<!--/header-->
+{block name="body"}{/block}
+
+<nav class="navbar navbar-fixed-bottom index">
+    <ul id="nav">
+        <a href="{:url('/mobile/index')}"><li class="home"><span class="glyphicon glyphicon-home
+"></span><p>首页</p></li></a>
+        <a href="{:url('category/index')}"><li class="category"><span class="glyphicon glyphicon-th-large
+"></span><p>分类</p></li></a>
+        <a href="{:url('mycart/index')}"><li class="mycart"><span class="glyphicon glyphicon-shopping-cart"></span><p>购物车</p></li></a>
+
+        <a href="{:url('user/index')}"><li class="user"><span class="glyphicon glyphicon-user"></span><p>我的</p></li></a>
+    </ul>
+</nav>
+
+{block name="script"}{/block}
+
+<script>
+    var str = window.location.href;
+    str=str.substr(str.length-19,19)
+    // alert(str)
+    if (str == 'm/mobile/index.html')
+    {
+        $('.home').css('color', '#04be02');
+    }
+    if (str == 'category/index.html')
+    {
+        $('.category').css('color', '#04be02');
+    }
+    if (str == 'e/mycart/index.html' || str == '?c=Ad')
+    {
+        $('.mycart').css('color', '#04be02');
+    }
+    if (str == 'ile/user/index.html')
+    {
+        $('.user').css('color', '#04be02');
+    }
+</script>
+</body>
+</html>

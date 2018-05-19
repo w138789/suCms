@@ -1,0 +1,108 @@
+{extend name="public/base"/}
+{block name="body"}
+{if $mycart}
+<div class="col-xs-12" style="background:#fff; margin-top: 50px">
+    <h5>收货人: {$addr.consignee}</h5>
+    <h5>收货地址: {$address}</h5>
+</div>
+<div class="col-xs-12" style="margin-top:10px; padding: 15px; background: #fff;">
+    {foreach name='mycart' item='v'}
+    <div style="height: 52px; border: 1px solid #e0e0e0;margin-top: 5px">
+        <div style="float: left;"><img src="{:get_picture($v.goods_thumb)['url']}" alt="" style="width: 50px"></div>
+        <div style="float: left; margin-left: 10px; margin-top: 3px;">
+            <div>
+                商品名称: {$v.goods_name}
+            </div>
+            <div>
+                <span>数量: {$v.goods_num}</span>
+                <span>￥{$v.shop_price}</span>
+            </div>
+        </div>
+        <div style="float: right; margin-top: 15px; margin-right: 10px">
+            <a href="javascript:;" onclick="del('{$v.id}')"><span class="glyphicon glyphicon-remove remove"></span></a>
+        </div>
+
+    </div>
+    {/foreach}
+</div>
+<div class="col-xs-12" style="margin-top: 10px; padding: 15px; background: #fff;">
+    快递方式: 申通快递
+</div>
+<div class="col-xs-12" style="margin-top: 10px; padding: 15px; background: #fff;">
+    合计: ￥<span>{$goods_prices}</span>
+</div>
+<script>
+    $(function () {
+        $('.index').css('display', 'none');
+    })
+</script>
+{else}
+<div class="col-xs-12" style="margin-top: 180px">
+    <div class="col-xs-12" style="text-align: center">购物车为空</div>
+    <div class="col-xs-12" style="margin-top: 10px; text-align: center"><a href="{:url('/mobile/index')}">
+        <button type="button" class="weui_btn weui_btn_plain_primary">立即购物</button>
+    </a></div>
+
+</div>
+{/if}
+{if $mycart}
+<nav class="navbar navbar-fixed-bottom">
+    <ul id="nav">
+        <li class="col-xs-6" style="width: 50%; margin-bottom: 10px; text-align: center">
+            <a href="javascript:;">
+                <button type="button" class="weui_btn weui_btn_warn empty" style="background: red;border-color: red;">
+                    清空购物车
+                </button>
+            </a>
+        </li>
+        <li class="col-xs-6" style="width: 50%; margin-bottom: 10px; text-align: center">
+            <a href="{:url('shopping/index')}">
+                <button type="button" class="weui_btn weui_btn_primary">提交订单</button>
+            </a>
+        </li>
+    </ul>
+</nav>
+<div class="weui_dialog_confirm goodsalert" style="display: none;">
+    <div class="weui_mask"></div>
+    <div class="weui_dialog">
+        <div class="weui_dialog_hd"><strong class="weui_dialog_title">删除商品</strong></div>
+        <div class="weui_dialog_bd">确定删除商品吗</div>
+        <div class="weui_dialog_ft">
+            <a href="#" class="weui_btn_dialog default goodscancel">取消</a>
+            <a href="" class="weui_btn_dialog primary ahref">确定</a>
+        </div>
+    </div>
+</div>
+<div class="weui_dialog_confirm alert" style="display: none;">
+    <div class="weui_mask"></div>
+    <div class="weui_dialog">
+        <div class="weui_dialog_hd"><strong class="weui_dialog_title">清空购物车</strong></div>
+        <div class="weui_dialog_bd">确定清空购物车吗</div>
+        <div class="weui_dialog_ft">
+            <a href="#" class="weui_btn_dialog default cancel">取消</a>
+            <a href="{:url('mycart/delall')}" class="weui_btn_dialog primary">确定</a>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $('.empty').click(function () {
+        $('.alert').css('display', 'block');
+    });
+    $('.cancel').click(function () {
+        $('.alert').css('display', 'none');
+    });
+
+    function del(goods_id) {
+        $('.goodsalert').css('display', 'block');
+        var url = "/mobile/mycart/del/goods_id/"+goods_id;
+        $(".ahref").attr("href", url);
+
+    }
+
+    $('.goodscancel').click(function () {
+        $('.goodsalert').css('display', 'none');
+    });
+
+</script>
+{/if}
+{/block}

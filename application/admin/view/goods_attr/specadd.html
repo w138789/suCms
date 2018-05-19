@@ -1,0 +1,127 @@
+{extend name="public/base"/}
+{block name="body"}
+<div class="main-box clearfix">
+    <header class="main-box-header clearfix">
+        <div class="pull-left">
+            <h2>{:isset($info['id'])?'编辑':'新增'}规格</h2>
+        </div>
+    </header>
+    <div class="main-box-body clearfix">
+        <form action="{:url()}" method="post" class="form form-horizontal">
+            <div class="form_add">
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">规格增加</label>
+
+                    <div class="col-lg-8">
+                        <div class="btn-group">
+                            <select class="form-control" name="attr_0_0" id="attr_0" style="width:auto;"
+                                    onchange="select(this,1)">
+                                <option value="">请选择</option>
+                                {volist name="attr" id="item"}
+                                <option value="{$item.attr_id}">{$item.title}</option>
+                                {/volist}
+                            </select>
+                        </div>
+                        <div class="btn-group">
+                            <select class="form-control" name="attr_1" id="attr_1" style="width:auto;" pid=""
+                                    onchange="selectChild(this)">
+                                <option value="">请选择</option>
+                            </select>
+                        </div>
+                        <div class="btn-group">
+                            <select class="form-control" name="attr_2" id="attr_2" style="width:auto;"
+                                    onchange="select(this,3)">
+                                <option value="">请选择</option>
+                            </select>
+                        </div>
+                        <div class="btn-group">
+                            <select class="form-control" name="attr_3" id="attr_3" style="width:auto;">
+                                <option value="">请选择</option>
+                            </select>
+                        </div>
+                        <div class="btn-group">
+                            <span class="btn-group">库存: </span>
+                            <input type="text" style="width: auto;" class="form-control" name="nam" autocomplete="false"
+                                   value="">
+                        </div>
+                        <div class="btn-group">
+                            <span class="btn-group">价格: </span>
+                            <input type="text" style="width: auto;" class="form-control" name="" autocomplete="false"
+                                   value="">
+                        </div>
+                        <div class="btn-group">
+                            <text class="btn btn-default add">+</text>
+                        </div>
+                        <span class="help-block"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-lg-offset-2 col-lg-10">
+                    <input type="hidden" name="id" value="{$info['id']|default=''}">
+                    <button type="submit" class="btn btn-success submit-btn ajax-post" target-form="form">确认提交</button>
+                    <button class="btn btn-danger btn-return" onclick="javascript:history.back(-1);return false;">返 回
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{/block}
+{block name="script"}
+<script type="text/javascript">
+    function select(obj, status) {
+        $.ajax({
+            type: "GET",
+            url: "/admin/goods_attr/ajaxAdd?attr_id=" + $(obj).val(),
+            data: {},
+            dataType: "json",
+            success: function (data) {
+                $(obj).parent().next().children('select').html('<option value="">请选择</option>');
+                var html = '';
+                $.each(data, function ($i, item) {
+                    html += '<option value="' + item + '">' + item + '</option>';
+                });
+                var pid = $(obj).val();
+                $(obj).parent().next().children('select').attr('pid', pid)
+                $(obj).parent().next().children('select').append(html);
+            }
+        });
+    }
+    function selectChild(obj) {
+        var pid = $(obj).attr('pid');
+        $.ajax({
+            type: "GET",
+            url: "/admin/goods_attr/ajaxChild?pid=" + pid,
+            data: {},
+            dataType: "json",
+            success: function (data) {
+                $(obj).parent().next().children('select').html('<option value="">请选择</option>');
+                var html = '';
+                $.each(data, function ($i, item) {
+                    html += '<option value="' + item['attr_id'] + '">' + item['title'] + '</option>';
+                });
+                $(obj).parent().next().children('select').append(html);
+            }
+        });
+    }
+    $('.add').click(function () {
+        var new_div = $('.form-group:first').clone();
+        var select_first = new_div.find('select:first').clone();
+        new_div.children('class', 'btn btn-default del');
+        new_div.find('select').html('<option value="">请选择</option>');
+        new_div.find('select:first').html('123');
+        new_div.find('text').attr('onclick', 'del(this)');
+        new_div.find('text').text('-');
+        new_div.find('input').val('');
+        $('.form_add').append(new_div);
+        return false;
+    })
+    function del(obj) {
+        $(obj).parent().parent().parent().remove();
+        return false;
+    }
+
+</script>
+{/block}

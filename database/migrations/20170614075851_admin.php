@@ -35,8 +35,8 @@ class Admin extends Migrator
             ->addColumn('email', 'string', ['limit' => 60])
             ->addColumn('last_login_ip', 'string', ['limit' => 15])
             ->addColumn('last_login_time', 'string', ['limit' => 60])
-            ->addColumn('create_time', 'timestamp', ['default' => 'CURRENT_TIMESTAMP'])
-            ->addColumn('update_time', 'timestamp', ['default' => 'CURRENT_TIMESTAMP', 'update' => 'CURRENT_TIMESTAMP'])
+            ->addColumn('create_time', 'string')
+            ->addColumn('update_time', 'string')
             ->create();
         $data = [
             'username'      => 'admin',
@@ -45,6 +45,8 @@ class Admin extends Migrator
             'email'         => '294496623@qq.com',
             'last_login_ip' => '192.168.3.201',
             'last_login_time' => '0',
+            'create_time' => time(),
+            'update_time' => time(),
         ];
         $this->table('admin')->insert($data)->saveData();
     }

@@ -5,12 +5,17 @@ use think\Model;
 
 class Config extends Model
 {
-    public $field = 'id, name, title, extra, value, remark, type';
+    public $fields = 'id, name, title, extra, value, remark, type';
 
+    protected function getTypeTextAttr($value, $data){
+        $type = config('config_type_list');
+        $type_text = explode(',', $type[$data['type']]);
+        return $type_text[0];
+    }
 
     public function selectAll($field = '', $where = [], $limit = NULL, $order = ['id' => 'asc'])
     {
-        $field = !empty($field) ? $field : $this->field;
+        $field = !empty($field) ? $field : $this->fields;
         $data  = $this->field($field)
             ->where($where)
             ->limit($limit)
@@ -26,6 +31,7 @@ class Config extends Model
             ->find();
         return $data;
     }
+
     public function lists(){
         $map    = array('status' => 1);
         $data   = $this->db()->where($map)->field('type,name,value')->select();
@@ -64,5 +70,33 @@ class Config extends Model
                 break;
         }
         return $value;
+    }
+
+    public function getThemesList(){
+        $files = array();
+        $files['pc'] = $this->getList('pc');
+        $files['mobile'] = $this->getList('mobile');
+        return $files;
+    }
+
+    protected function getList($type){
+        $path = 'template/';
+        $file  = opendir($path);
+        while (false !== ($filename = readdir($file))) {
+            if (!in_array($filename, array('.', '..'))) {
+                $files = $path . $filename . '/info.php';
+                if (is_file($files)) {
+                    $info = include($files);
+                    if (isset($info['type']) && $info['type'] == $type) {
+                        $info['id']  = $filename;
+                        $info['img'] = '/template/' . $filename . '/' . $info['img'];
+                        $list[] = $info;
+                    }else{
+                        continue;
+                    }
+                }
+            }
+        }
+        return isset($list) ? $list : array();
     }
 }

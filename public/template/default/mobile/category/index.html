@@ -1,0 +1,14 @@
+{extend name="public/base"/}
+{block name="body"}
+<ul class="list-group top">
+    {foreach name='categorys' item='v'}
+    <a href="{:url('goods/lists',['category_id'=>$v.id])}"><li class="list-group-item">{$v.title}</li></a>
+    {foreach name='v.arr' item='va'}
+    <a href="{:url('goods/lists',['category_id'=>$va.id])}"><li class="list-group-item mix">{$va.title}</li></a>
+    {foreach name='va.arr' item='vas'}
+    <a href="{:url('goods/lists',['category_id'=>$vas.id])}"><li class="list-group-item mixs">{$vas.title}</li></a>
+    {/foreach}
+    {/foreach}
+    {/foreach}
+</ul>
+{/block}

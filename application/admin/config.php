@@ -1,7 +1,7 @@
 <?php
 //配置文件
 return [
-    'user_administrator' => 1,
+    'admin_administrator' => 1,
 
     'view_replace_str'   => array(
         '__PUBLIC__'    => '',
